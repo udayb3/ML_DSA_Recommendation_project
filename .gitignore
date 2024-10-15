@@ -6,3 +6,6 @@ Scripts
 Lib
 Include
 pyvenv.cfg
+node_modules
+.env
+package-lock.json
