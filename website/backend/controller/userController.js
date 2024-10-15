@@ -65,4 +65,57 @@ const register = async (req , res , next) => {
     
 }
 
-export {register}
+const login = async (req , res , next) => {
+    try{
+        const {email , password} = req.body;
+        if(!password || !email){
+            return res.status(400).json({
+                success : false,
+                message : "Enter all the fields"
+            });
+        }
+
+        const user = await User.findOne({
+            email
+        }).select('+password')
+
+        // Using bcrypt
+        if(!user || !user.comparePassword(password)){
+            return res.status(400).json({
+                success : false,
+                message : "Password Doesn't Matched"
+            });
+        }
+
+        // Token generate karo do then
+        const token = await user.generateJWTToken();
+        user.password = undefined;
+
+        // Key values op
+        res.cookie('token' , token , cookieOptions);
+
+        res.status(200).json({
+            success : true,
+            message : "User Logged In successfully",
+            user,
+        })
+    }
+    catch(e){
+        return res.status(400).json({
+            success : false,
+            message : "Some Error Occured"
+        });
+    }
+
+}
+
+
+const dashboard_search = async (req , res , next) => {
+    const {question_title} = req.body;
+
+    // Fetching the related recommended question using the ml model
+    // Send that filtered questions sets 
+}
+
+
+export {register , login , dashboard_search}

@@ -24,7 +24,7 @@ const userSchema = new Schema({
     password : {
         type : 'String',
         required : true,
-        minLength : [8 , "password must be atleast 8 character"],
+        minLength : [8 , "passwod must be atleast 8 character"],
         // Explicitly maange tab hi dena
         select : false,
     },
