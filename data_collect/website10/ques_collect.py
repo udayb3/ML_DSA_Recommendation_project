@@ -17,26 +17,26 @@ opt.add_argument(
 )
 
 
-for i in range(1,6):
+for j in range(1, 6):
 
-	df= pd.read_csv(f"splitted_data/link_collect{i}.csv")
+	df= pd.read_csv(f"test/link_collect{j}.csv")
 	df.drop(['Unnamed: 0.1', 'Unnamed: 0'], axis=1, inplace=True)
 
 	ini_df= df.to_dict()
 	ini_df['text']={}
 
 	for i in ini_df['link']:
-
-		drv=webdriver.Firefox()
+		
+		if(i%100==0):
+			drv=webdriver.Firefox()
 		drv.set_window_size(1400,850);	drv.set_window_position(0,0)
 		
 		drv.get(ini_df['link'][i])
 		text= drv.find_element(by.ID, 'problem-body').text
 		ini_df['text'][i]= text
-		if(i%100==0):
+		if((i+1)%100==0):
 			print(f"{i} done")
-		
-		drv.quit()
+			drv.quit()
 
 	data= pd.DataFrame(ini_df)
-	data.to_json(f"gen_data_w10_{i}.json")
+	data.to_json(f"test/gen_data_w10_{j}.json")
