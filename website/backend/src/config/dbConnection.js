@@ -9,7 +9,7 @@ const connectionToDB = async () => {
             config.databaseURL || 'mongodb://127.0.0.1:27017/ml-backend'
         )
         if(connection){
-            console.log("Connected to database!!", connection.host);
+            console.log(`Connected to ${connection.host} database!!`);
         }
     }
     catch(e){

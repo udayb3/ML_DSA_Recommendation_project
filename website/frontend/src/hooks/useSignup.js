@@ -1,52 +1,60 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast';
-import { useAuthContext } from '../context/AuthContext';
+import { useAuthContext } from './useAuthContext';
 
 const useSignup = () => {
-  const [loading, setLoading] = useState(false);
-  const {setAuthUser} = useAuthContext(); 
+    const [loading, setLoading] = useState(false);
+    const { dispatch } = useAuthContext();
 
-  const signup = async({fullName, username, password, confirmPassword, gender})=>{
-      const success= handleInputError({fullName, username, password, confirmPassword  , gender});
-      if(!success) return;
-      setLoading(true);
-    try{
-       const res= await fetch('/api/auth/signup',{
-       method: 'POST',
-       headers: {
-            'Content-Type': 'application/json'
-       },
-       body: JSON.stringify({fullName, username, password,confirmPassword, gender})
-      })
-      const data = await res.json();
-      if(data.error) {throw new Error(data.error);}
-       
-      localStorage.setItem('chat-user',JSON.stringify(data));
-      setAuthUser(data);
-    } 
-    catch(error){
-        toast.error(error.message);
-    }
-    finally{
-        setLoading(false);
-    }
-  };
-    return {loading, signup};
+    const signup = async ({ username, email, password, confirmPassword }) => {
+        const success = handleInputError({ username, email, password, confirmPassword });
+        if (!success) return;
+        setLoading(true);
+        try {
+            const res = await fetch('/api/user/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userName: username, email, password })
+            })
+            const data = await res.json();
+            if (data.error) { throw new Error(data.error); }
+            if (!res.ok) { 
+                setLoading(false);
+                toast.error(data.error);
+            }
+            if (res.ok) {
+                localStorage.setItem('user', JSON.stringify(data));
+                
+                dispatch({ type: 'LOGIN', payload: data });
+                setLoading(false);
+            }
+
+        }
+        catch (error) {
+            toast.error(error.message);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    return { loading, signup };
 }
 
-function handleInputError({fullName, username, password, confirmPassword, gender}){
-    if(!fullName || !username || !password || !confirmPassword || !gender){
+function handleInputError({ username, email, password, confirmPassword }) {
+    if (!username || !email || !password || !confirmPassword) {
         toast.error('All fields are required');
         return false;
     }
-    if(password !== confirmPassword){
+    if (password !== confirmPassword) {
         toast.error('Passwords do not match');
         return false;
     }
-    if(password.length < 6){
-        toast.error('Password must be at least 6 characters');
+    if (password.length < 8) {
+        toast.error('Password must be at least 8 characters');
         return false;
-    } 
+    }
     return true;
 }
 

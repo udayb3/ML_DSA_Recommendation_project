@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 app.use(cors({
-    origin : [config.frontedURL],
+    origin : config.frontedURL,
     credentials : true
 }));
 app.use(cookieParser());

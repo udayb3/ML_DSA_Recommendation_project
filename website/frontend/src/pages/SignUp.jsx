@@ -4,7 +4,7 @@ import useSignup from '../hooks/useSignup';
 
 function SignUp() {
   const [inputs, setInputs] = useState({
-    fullName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -38,13 +38,13 @@ function SignUp() {
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-2">Full Name</label>
+            <label className="block text-base font-medium text-gray-700 mb-2">Username</label>
             <input
               type="text"
-              placeholder="Enter Your full name"
+              placeholder="Enter Your username"
               className="w-full p-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={inputs.fullName}
-              onChange={(e) => setInputs({ ...inputs, fullName: e.target.value })}
+              value={inputs.username}
+              onChange={(e) => setInputs({ ...inputs, username: e.target.value })}
             />
           </div>
           <div>

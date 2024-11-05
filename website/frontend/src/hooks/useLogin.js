@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { useAuthContext } from '../context/AuthContext.jsx'
+import { useAuthContext } from './useAuthContext'
 
 const useLogin = () => {
     const [loading, setLoading] = useState(false)
-    const { setAuthUser } = useAuthContext();
-    const login = async (username, password) => {
-        const success = handleInputError(username, password);
+    const { dispatch } = useAuthContext();
+
+    const login = async (email, password) => {
+        const success = handleInputError(email, password);
         if (!success) return;
+        console.log(email)
+        
         setLoading(true)
         try {
             const res = await fetch("/api/user/login", {
@@ -15,16 +18,15 @@ const useLogin = () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ username, password })
-
+                body: JSON.stringify({ email, password })
             })
             const data = await res.json();
             console.log(data)
             if (data.error) {
                 throw new Error(data.error)
             }
-            localStorage.setItem("chat-user", JSON.stringify(data))
-            setAuthUser(data)
+            localStorage.setItem("user", JSON.stringify(data))
+            dispatch({ type: "LOGIN", payload: data })
         }
         catch (error) {
             toast.error(error.message);
@@ -34,6 +36,14 @@ const useLogin = () => {
         }
     }
     return { loading, login }
+}
+
+function handleInputError(email, password) {
+    if (!email || !password) {
+        toast.error('All fields are required');
+        return false;
+    }
+    return true;
 }
 
 export default useLogin

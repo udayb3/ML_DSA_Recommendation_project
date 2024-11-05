@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 
 export const signup = async (userName, email, password) => {
     if(!userName || !password || !email){
+        console.log(userName, email, password);
         throw new Error("Enter all the fields");
     }
 
