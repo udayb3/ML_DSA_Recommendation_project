@@ -5,11 +5,10 @@ import { useAuthContext } from './useAuthContext'
 const useLogin = () => {
     const [loading, setLoading] = useState(false)
     const { dispatch } = useAuthContext();
-
+    
     const login = async (email, password) => {
         const success = handleInputError(email, password);
         if (!success) return;
-        console.log(email)
         
         setLoading(true)
         try {
@@ -21,11 +20,10 @@ const useLogin = () => {
                 body: JSON.stringify({ email, password })
             })
             const data = await res.json();
-            console.log(data)
-            if (data.error) {
-                throw new Error(data.error)
+            if (!data.success) {
+                toast.error(data.message)
+                return;
             }
-            localStorage.setItem("user", JSON.stringify(data))
             dispatch({ type: "LOGIN", payload: data })
         }
         catch (error) {
@@ -41,6 +39,10 @@ const useLogin = () => {
 function handleInputError(email, password) {
     if (!email || !password) {
         toast.error('All fields are required');
+        return false;
+    }
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) === false) {
+        toast.error('Invalid email');
         return false;
     }
     return true;

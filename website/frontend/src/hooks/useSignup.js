@@ -19,18 +19,15 @@ const useSignup = () => {
                 body: JSON.stringify({ userName: username, email, password })
             })
             const data = await res.json();
-            if (data.error) { throw new Error(data.error); }
-            if (!res.ok) { 
-                setLoading(false);
+            if (!data.success) { 
+                toast.error(data.message);
+            }
+            if (data.success && !res.ok) {
                 toast.error(data.error);
             }
-            if (res.ok) {
-                localStorage.setItem('user', JSON.stringify(data));
-                
+            if (data.success && res.ok) {              
                 dispatch({ type: 'LOGIN', payload: data });
-                setLoading(false);
             }
-
         }
         catch (error) {
             toast.error(error.message);

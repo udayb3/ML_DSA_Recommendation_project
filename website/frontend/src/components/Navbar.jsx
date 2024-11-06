@@ -17,7 +17,7 @@ function Navbar() {
       </div> 
       <div className="flex items-center space-x-4">
         <button className="bg-purple-500 hover:bg-purple-600 py-2 px-4 rounded-md">
-          Welcome, {user.user.userName}
+          Welcome, { user && user.success ? user.user.userName: 'User' }
           {/* Profile */}
         </button>
         <button className="bg-purple-500 hover:bg-purple-600 py-2 px-4 rounded-md" onClick={logout}>
