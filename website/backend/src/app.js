@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import userRoutes from './routes/userRoutes.js'
+import questionRoutes from './routes/questionRoutes.js';
 import config from './config/index.js';
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use('/api/user', userRoutes);
+app.use('/api/', questionRoutes);
 app.use('*', (_, res) => {
     res.status(404).send('OOPS!!, 404 page not found')
 })

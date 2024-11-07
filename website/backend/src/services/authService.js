@@ -1,9 +1,8 @@
 import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 
-export const signup = async (userName, email, password) => {
-    if(!userName || !password || !email){
-        console.log(userName, email, password);
+export const signup = async (username, email, password) => {
+    if(!username || !password || !email){
         throw new Error("Enter all the fields");
     }
 
@@ -15,7 +14,7 @@ export const signup = async (userName, email, password) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const user = await User.create({
-        userName,
+        username,
         email,
         password: hashedPassword
     })
@@ -24,7 +23,6 @@ export const signup = async (userName, email, password) => {
         throw new Error("User Not Created");
     }
 
-    await user.save();
     user.password = undefined;
     return user;
 }

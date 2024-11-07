@@ -1,4 +1,5 @@
 import {signup, signin} from "../services/authService.js";
+import * as userService from "../services/userService.js";
 import {generateToken} from "../utils/jwtUtils.js";
 
 const cookieOptions = {
@@ -8,10 +9,10 @@ const cookieOptions = {
 }
 
 export const register = async (req, res) => {
-    const {userName, email, password} = req.body;
+    const {username, email, password} = req.body;
 
     try{
-        const user = await signup(userName, email, password);
+        const user = await signup(username, email, password);
 
         const token = generateToken(user._id);
 
@@ -48,6 +49,74 @@ export const login = async (req, res) => {
     }
     catch(e){
         return res.status(400).json({
+            success : false,
+            message : e.message,
+        });
+    }
+}
+
+export const upvote = async (req, res) => {
+    const {username, qId} = req.body;
+    try{
+        userService.upvote(username, qId);
+        res.status(200).json({
+            success : true,
+            message : "Upvoted successfully",
+        });
+    }
+    catch(e){
+        res.status(400).json({
+            success : false,
+            message : e.message,
+        });
+    }
+}
+
+export const downvote = async (req, res) => {
+    const {username, qId} = req.body;
+    try{
+        userService.downvote(username, qId);
+        res.status(200).json({
+            success : true,
+            message : "Downvoted successfully",
+        });
+    }
+    catch(e){
+        res.status(400).json({
+            success : false,
+            message : e.message,
+        });
+    }
+}
+
+export const solved = async (req, res) => {
+    const {username, qId} = req.body;
+    try{
+        userService.solved(username, qId);
+        res.status(200).json({
+            success : true,
+            message : "Marked solved successfully",
+        });
+    }
+    catch(e){
+        res.status(400).json({
+            success : false,
+            message : e.message,
+        });
+    }
+}
+
+export const addNote = async (req, res) => {
+    const {username, qId, note} = req.body;
+    try{
+        userService.addNote(username, qId, note);
+        res.status(200).json({
+            success : true,
+            message : "Note added successfully",
+        });
+    }
+    catch(e){
+        res.status(400).json({
             success : false,
             message : e.message,
         });

@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    userName : {
+    username : {
         type : String,
         required : [true, "Name is required"],
         minLength :  [5, "Name Must be atleast 5 character"],
         maxLength :  [50, "Name Must be less than 50 character"],
-        lowercase : true,
         trim : true
     },
-    email :{
+    email : {
         type : String,
         required : true,
         lowercase : true,
@@ -20,8 +19,33 @@ const userSchema = new mongoose.Schema({
     password : {
         type : String,
         required : true,
-        minLength : [8 , "Password must be atleast 8 characters"]
+        minLength : [8, "Password must be atleast 8 characters"]
     },
+    questionsSolved : [{
+        questionId : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "Question"
+        },
+        qId: {
+            type : Number,
+        },
+        timeTaken : {
+            type : Number,
+            default : 20
+        },
+        vote: {
+            type : Number,
+            default : 0
+        },
+        note: {
+            type : String,
+            trim : true
+        },
+        isSolved : {
+            type : Boolean,
+            default : false
+        }
+    }],
     forgotPasswordToken : String,
     forgotPasswordExpiry : Date,
 },

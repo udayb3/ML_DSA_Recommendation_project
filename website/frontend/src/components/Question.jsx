@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import * as userApi from '../api/user.js';
+import { useAuthContext } from '../hooks/useAuthContext'
 import { FaArrowUp, FaArrowDown, FaClipboard } from 'react-icons/fa';
 
-function Question({ name, link, difficulty, upvotes, downvotes, solved, totalSubmissions }) {
+function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, totalSolved }) {
   const [note, setNote] = useState('');
   const [showCopied, setShowCopied] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
@@ -40,6 +42,15 @@ function Question({ name, link, difficulty, upvotes, downvotes, solved, totalSub
     }
   };
 
+  const { user } = useAuthContext();
+  useEffect(() => {
+    const updateUpvote = async() => await userApi.upvoted(user.user.username, qId);
+    const updateDownvote = async() => await userApi.downvoted(user.user.username, qId);
+
+    if (voteStatus === 'upvoted') updateUpvote();
+    if (voteStatus === 'downvoted') updateDownvote();
+  }, [upvoteCount, downvoteCount]);
+
   return (
     <div className="p-4 bg-white rounded-md shadow-md flex flex-col border-l-4 border-purple-600 space-y-4">
       <div className="flex justify-between items-center">
@@ -50,7 +61,7 @@ function Question({ name, link, difficulty, upvotes, downvotes, solved, totalSub
           <p className={`text-sm font-medium ${difficulty === 'Hard' ? 'text-red-600' : difficulty === 'Medium' ? 'text-yellow-600' : 'text-green-600'}`}>
             Difficulty: {difficulty}
           </p>
-          <p className="text-gray-500">Total Submissions: {totalSubmissions}</p>
+          <p className="text-gray-500">Total Submissions: {totalSolved}</p>
         </div>
         <div className="flex items-center space-x-4">
           <button
@@ -87,7 +98,7 @@ function Question({ name, link, difficulty, upvotes, downvotes, solved, totalSub
           <span>{downvoteCount}</span>
         </button>
       </div>
-      
+
       {showNotes && (
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-600">Notes:</label>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast';
 import { useAuthContext } from './useAuthContext';
+import * as auth from '../api/auth';
 
 const useSignup = () => {
     const [loading, setLoading] = useState(false);
@@ -11,21 +12,8 @@ const useSignup = () => {
         if (!success) return;
         setLoading(true);
         try {
-            const res = await fetch('/api/user/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ userName: username, email, password })
-            })
-            const data = await res.json();
-            if (!data.success) { 
-                toast.error(data.message);
-            }
-            if (data.success && !res.ok) {
-                toast.error(data.error);
-            }
-            if (data.success && res.ok) {              
+            const data = await auth.register({ username, email, password });
+            if (data && data.success) {              
                 dispatch({ type: 'LOGIN', payload: data });
             }
         }
