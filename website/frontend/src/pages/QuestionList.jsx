@@ -25,20 +25,6 @@ const QuestionList = () => {
 
   return (
     <>
-      <button className='inline-block cursor-pointer rounded-md bg-gray-800 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900'
-      onClick={() => setPage((old) => Math.max(old - 1, 0))} disabled={page === 0}>
-        Prev
-      </button>{' '}
-      <span>Page {page + 1}</span>{' '}
-      {console.log(data)}
-      <button className='inline-block cursor-pointer rounded-md bg-gray-800 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900'
-        onClick={() => {
-          setPage((old) => (data?.hasMore ? old + 1 : old))
-        }}
-        disabled={isPlaceholderData || !data?.hasMore}>
-        Next
-      </button>
-
       <div className="space-y-4">
         {status === 'pending' ? (
           <div>Loading...</div>
@@ -54,6 +40,20 @@ const QuestionList = () => {
             ))}
           </div>
         )}
+      </div>
+      <div className='mb-4'>
+        <button className='inline-block cursor-pointer rounded-md bg-purple-700 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900'
+        onClick={() => setPage((old) => Math.max(old - 1, 0))} disabled={page === 0}>
+          Prev
+        </button>{' '}
+        <span>Page {page + 1}</span>{' '}
+        <button className='inline-block cursor-pointer rounded-md bg-purple-700 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900'
+          onClick={() => {
+            setPage((old) => (data?.hasMore ? old + 1 : old))
+          }}
+          disabled={isPlaceholderData || !data?.hasMore}>
+          Next
+        </button>
       </div>
     </>
   )

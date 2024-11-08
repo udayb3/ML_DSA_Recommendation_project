@@ -121,3 +121,16 @@ export const addNote = async (username, qId, note) => {
 
     return user;
 }
+
+export const getVoteStatus = async (username, qId) => {
+    const user = await User.findOne({ username });
+    const question = user.questionsSolved.find(q => q.qId == qId);
+    console.log(question.vote);
+    return question.vote;
+}
+
+export const getSolvedStatus = async (username, qId) => {
+    const user = await User.findOne ({ username });
+    const question = user.questionsSolved.find(q => q.qId == qId);
+    return question.isSolved;
+}

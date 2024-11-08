@@ -9,7 +9,69 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
   const [showNotes, setShowNotes] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(upvotes);
   const [downvoteCount, setDownvoteCount] = useState(downvotes);
-  const [voteStatus, setVoteStatus] = useState(null); // null, 'upvoted', or 'downvoted'
+  const [userVote, setUserVote] = useState(0);
+  const [solvedStatus, setSolvedStatus] = useState(solved);
+  const { user } = useAuthContext();
+
+  useEffect(() => {
+    const fetchVoteStatus = async () => {
+      try {
+        const status = await userApi.getVoteStatus(user.user.username, qId);
+        // console.log(status);
+        setUserVote(status);
+      } 
+      catch (err) {
+        console.error('Failed to fetch vote status: ', err);
+      }
+    }
+    const fetchSolvedStatus = async () => {
+      try {
+        const status = await userApi.getSolvedStatus(user.user.username, qId);
+        // console.log(status);
+        setSolvedStatus(status);
+      } 
+      catch (err) {
+        console.error('Failed to fetch vote status: ', err);
+      }
+    }
+    fetchVoteStatus();
+    fetchSolvedStatus();
+  },[]);
+
+
+  const handleUpvote = () => {
+    const updateUpvote = async() => await userApi.upvoted(user.user.username, qId);
+    updateUpvote();
+    if (userVote === 1) {
+      setUpvoteCount(upvoteCount - 1);
+      setUserVote(0);
+    } else if (userVote === -1) {
+      setUpvoteCount(upvoteCount + 1);
+      setDownvoteCount(downvoteCount - 1);
+      setUserVote(1);
+    }
+    else {
+      setUpvoteCount(upvoteCount + 1);
+      setUserVote(1);
+    }
+  };
+
+  const handleDownvote = () => {
+    const updateDownvote = async() => await userApi.downvoted(user.user.username, qId);
+    updateDownvote();
+    if (userVote === -1) {
+      setDownvoteCount(downvoteCount - 1);
+      setUserVote(0);
+    } else if (userVote === 1) {
+      setDownvoteCount(downvoteCount + 1);
+      setUpvoteCount(upvoteCount - 1);
+      setUserVote(-1);
+    }
+    else {
+      setDownvoteCount(downvoteCount + 1);
+      setUserVote(-1);
+    }
+  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(link)
@@ -20,36 +82,17 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
       .catch((err) => console.error('Failed to copy: ', err));
   };
 
-  const toggleUpvote = () => {
-    if (voteStatus === 'upvoted') {
-      setUpvoteCount(upvoteCount - 1);
-      setVoteStatus(null);
-    } else {
-      setUpvoteCount(upvoteCount + 1);
-      if (voteStatus === 'downvoted') setDownvoteCount(downvoteCount - 1);
-      setVoteStatus('upvoted');
-    }
-  };
+  const handleSolve = async () => {
+    const updateSolved = async() => await userApi.solved(user.user.username, qId);
+    setSolvedStatus((solvedStatus) => !solvedStatus);
+    updateSolved();
+  }
 
-  const toggleDownvote = () => {
-    if (voteStatus === 'downvoted') {
-      setDownvoteCount(downvoteCount - 1);
-      setVoteStatus(null);
-    } else {
-      setDownvoteCount(downvoteCount + 1);
-      if (voteStatus === 'upvoted') setUpvoteCount(upvoteCount - 1);
-      setVoteStatus('downvoted');
-    }
-  };
+  const handleNote = async (e) => {
+    e.preventDefault();
+    setNote(e.target.value);
+  }
 
-  const { user } = useAuthContext();
-  useEffect(() => {
-    const updateUpvote = async() => await userApi.upvoted(user.user.username, qId);
-    const updateDownvote = async() => await userApi.downvoted(user.user.username, qId);
-
-    if (voteStatus === 'upvoted') updateUpvote();
-    if (voteStatus === 'downvoted') updateDownvote();
-  }, [upvoteCount, downvoteCount]);
 
   return (
     <div className="p-4 bg-white rounded-md shadow-md flex flex-col border-l-4 border-purple-600 space-y-4">
@@ -71,7 +114,7 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
             {showCopied ? 'Copied!' : 'Share'}
           </button>
           <label className="flex items-center text-purple-600">
-            <input type="checkbox" defaultChecked={false} className="mr-2" />
+            <input type="checkbox" defaultChecked={solvedStatus} className="mr-2" onChange={handleSolve} />
             Solved
           </label>
           <button
@@ -84,15 +127,15 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
       </div>
       <div className="flex justify-end space-x-4 items-center text-gray-500">
         <button
-          onClick={toggleUpvote}
-          className={`flex items-center space-x-1 ${voteStatus === 'upvoted' ? 'text-purple-600' : ''}`}
+          onClick={handleUpvote}
+          className={`flex items-center space-x-1 ${userVote === 1 ? 'text-purple-600' : ''}`}
         >
           <FaArrowUp size={18} />
           <span>{upvoteCount}</span>
         </button>
         <button
-          onClick={toggleDownvote}
-          className={`flex items-center space-x-1 ${voteStatus === 'downvoted' ? 'text-purple-600' : ''}`}
+          onClick={handleDownvote}
+          className={`flex items-center space-x-1 ${userVote === -1 ? 'text-purple-600' : ''}`}
         >
           <FaArrowDown size={18} />
           <span>{downvoteCount}</span>
@@ -104,7 +147,7 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
           <label className="block text-sm font-medium text-gray-600">Notes:</label>
           <textarea
             value={note}
-            onChange={(e) => setNote(e.target.value)}
+            onChange={handleNote}
             placeholder="Write a personal note..."
             className="w-full mt-1 p-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />

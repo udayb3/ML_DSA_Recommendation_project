@@ -122,3 +122,37 @@ export const addNote = async (req, res) => {
         });
     }
 }
+
+export const getVoteStatus = async (req, res) => {
+    const {username, qId} = req.body;
+    try{
+        const status = await userService.getVoteStatus(username, qId);
+        res.status(200).json({
+            success : true,
+            status : status
+        });
+    }
+    catch(e){
+        res.status(400).json({
+            success : false,
+            message : e.message,
+        });
+    }
+}
+
+export const getSolvedStatus = async (req, res) => {
+    const {username, qId} = req.body;
+    try{
+        const status = await userService.getSolvedStatus(username, qId);
+        res.status(200).json({
+            success : true,
+            status : status
+        });
+    }
+    catch(e){
+        res.status(400).json({
+            success : false,
+            message : e.message,
+        });
+    }
+}

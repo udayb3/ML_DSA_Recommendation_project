@@ -36,10 +36,11 @@ export const solved = async (username, qId) => {
         },
         body: JSON.stringify({ username, qId }),
     });
-    if (!response.success) {
+    const data = await response.json();
+    if(!data.success){
         throw new Error('Could not mark question as solved');
     }
-    const data = await response.json();
+    // console.log(data);
     return data;
 }
 
@@ -56,4 +57,34 @@ export const addedNote = async (username, qId, note) => {
     }
     const data = await response.json();
     return data;
+}
+
+export const getVoteStatus = async (username, qId) => {
+    const response = await fetch(`/api/user/voteStatus`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, qId }),
+    });
+    if (!response.ok) {
+        throw new Error('Could not retrieve vote status');
+    }
+    const data = await response.json();
+    return data.status;
+};
+
+export const getSolvedStatus = async (username, qId) => {
+    const response = await fetch(`/api/user/solvedStatus`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, qId }),
+    });
+    if (!response.ok) {
+        throw new Error('Could not retrieve solved status');
+    }
+    const data = await response.json();
+    return data.status; 
 }
