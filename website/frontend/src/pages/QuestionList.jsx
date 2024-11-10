@@ -1,5 +1,6 @@
 import Question from '../components/Question';
 import { getQuestions } from '../api/questions.js';
+import { FaArrowLeft , FaArrowRight } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -41,18 +42,18 @@ const QuestionList = () => {
           </div>
         )}
       </div>
-      <div className='mb-4'>
-        <button className='inline-block cursor-pointer rounded-md bg-purple-700 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900'
+      <div className='mb-4 flex flex-row align-center'>
+        <button className='inline-block mt-2 cursor-pointer text-purple-700 hover:text-purple-900 hover:font-semibold rounded-md px-4 py-3 text-center text-sm font-semibold transition duration-200 ease-in-out'
         onClick={() => setPage((old) => Math.max(old - 1, 0))} disabled={page === 0}>
-          Prev
-        </button>{' '}
-        <span>Page {page + 1}</span>{' '}
-        <button className='inline-block cursor-pointer rounded-md bg-purple-700 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900'
+          <FaArrowLeft className='text-xl ' />
+        </button>
+        <span className='mb-4 mt-5 '>Page {page + 1}</span>{' '}
+        <button className='inline-block mt-2 cursor-pointer text-purple-700 hover:text-purple-900 hover:font-semibold rounded-md px-4 py-3 text-center text-sm font-semibold  transition duration-200 ease-in-out'
           onClick={() => {
             setPage((old) => (data?.hasMore ? old + 1 : old))
           }}
           disabled={isPlaceholderData || !data?.hasMore}>
-          Next
+          <FaArrowRight className='text-xl '  />
         </button>
       </div>
     </>

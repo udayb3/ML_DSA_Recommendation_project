@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import useLogout from '../hooks/useLogout';
 import { useAuthContext } from '../hooks/useAuthContext';
 
@@ -7,7 +8,7 @@ function Navbar() {
   const { user } = useAuthContext();
   return (
     <nav className="bg-purple-700 p-4 flex justify-between items-center text-white">
-      <div className='text-2xl font-bold'>LeetForce</div>
+      <Link to="/" className='text-2xl font-bold'>LeetForce</Link>
       <div className="flex items-center space-x-4">
         <input
           type="text"
