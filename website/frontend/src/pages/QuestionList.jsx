@@ -33,12 +33,15 @@ const QuestionList = () => {
           <div>Error: {error.message}</div>
         ) : (
           <div>
-            {data.questions.map((question) => (
-              <>
-                <Question key={question.qId} {...question} />
-                <br />
-              </>
-            ))}
+            {data.questions.map((question) =>{
+                //  console.log(question.qId);
+                return ( 
+                  <>
+                    <Question key={question.qId} {...question} />
+                    <br />
+                  </>
+                )
+            })}
           </div>
         )}
       </div>

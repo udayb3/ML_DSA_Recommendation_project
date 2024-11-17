@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import * as userApi from '../api/user.js';
+import { getSimilarQuestions } from '../api/questions.js';
 import { useAuthContext } from '../hooks/useAuthContext'
-import { FaArrowUp, FaArrowDown, FaClipboard } from 'react-icons/fa';
+import { FaArrowUp, FaArrowDown, FaClipboard ,FaSearch } from 'react-icons/fa';
 
 function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, totalSolved }) {
   const [note, setNote] = useState('');
@@ -11,6 +12,9 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
   const [downvoteCount, setDownvoteCount] = useState(downvotes);
   const [userVote, setUserVote] = useState(0);
   const [solvedStatus, setSolvedStatus] = useState(solved);
+  const [showSimilarModal, setShowSimilarModal] = useState(false); // For modal visibility
+  const [similarQuestions, setSimilarQuestions] = useState([]); // For similar questions
+  const [loadingSimilar, setLoadingSimilar] = useState(false); // Loading state for similar questions
   const { user } = useAuthContext();
 
   useEffect(() => {
@@ -37,7 +41,7 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
     fetchVoteStatus();
     fetchSolvedStatus();
   },[]);
-
+  
 
   const handleUpvote = () => {
     const updateUpvote = async() => await userApi.upvoted(user.user.username, qId);
@@ -93,6 +97,19 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
     setNote(e.target.value);
   }
 
+  const handleSimilarQuestions = async () => {
+    setLoadingSimilar(true);
+    try {
+      const questions = await getSimilarQuestions(qId);
+      const data = questions.similarQuestions
+      setSimilarQuestions(data);
+    } catch (err) {
+      console.error('Failed to fetch similar questions: ', err);
+    } finally {
+      setLoadingSimilar(false);
+    }
+    setShowSimilarModal(true);
+  };
 
   return (
     <div className="p-4 bg-white rounded-md shadow-md flex flex-col border-l-4 border-purple-600 space-y-4">
@@ -112,6 +129,13 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
             className="text-sm bg-purple-500 text-white h-6 px-3 py-1 rounded hover:bg-purple-600"
           >
             {showCopied ? 'Copied!' : 'Share'}
+          </button>
+          <button
+            onClick={handleSimilarQuestions}
+            className="text-sm bg-purple-500 text-white h-6 px-3 py-1 rounded hover:bg-purple-600 flex items-center space-x-1"
+          >
+            <FaSearch />
+            <span>See Similar</span>
           </button>
           <label className="flex items-center text-purple-600">
             <input type="checkbox" defaultChecked={solvedStatus} className="mr-2" onChange={handleSolve} />
@@ -153,8 +177,31 @@ function Question({ qId, name, link, difficulty, upvotes, downvotes, solved, tot
           />
         </div>
       )}
+       {showSimilarModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-md shadow-md max-w-lg w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Similar Questions</h3>
+              <button onClick={() => setShowSimilarModal(false)} className="text-gray-500 hover:text-gray-700">
+                &times;
+              </button>
+            </div>
+            {loadingSimilar ? (
+              <p>Loading...</p>
+            ) : 
+            <> 
+            <p>{similarQuestions.q1}</p> 
+            <p>{similarQuestions.q2}</p>
+            <p>{similarQuestions.q3}</p>
+            <p>{similarQuestions.q4}</p>
+            <p>{similarQuestions.q5}</p>
+            </>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default Question;
+

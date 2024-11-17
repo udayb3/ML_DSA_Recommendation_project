@@ -16,3 +16,7 @@ pnpm-lock.yaml
 pyvenv/**/*
 */**/embed_model.*
 */**/model.*
+
+venv/
+*.pyc
+__pycache__/
