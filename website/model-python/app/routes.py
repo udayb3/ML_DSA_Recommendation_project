@@ -3,14 +3,14 @@ import os
 from flask import Blueprint, jsonify, request
 import types
 import marshal, pickle
-
-main = Blueprint('main', __name__)
-
 import pickle
-import marshal
 import types
 import torch
 import transformers
+import pandas as pd
+
+main = Blueprint('main', __name__)
+
 
 # Function to get embedding for a new input question
 def get_question_embedding(text, mtokenizer, mmodel, device):
@@ -39,18 +39,9 @@ def find_similar_questions(input_text, mtokenizer, mmodel,  pca_class, my_cosine
   # Get the top N most similar questions
   top_indices = similarities[0].argsort()[-top_n:][::-1]
   similar_questions = train_sample.iloc[top_indices][['name']]
-  return similar_questions
+  return similar_questions.to_dict()['name']
 
-try:
-    my_model = pickle.load(open("./../../pre_trained_model/embedding/embed_model.pkl", 'rb'))
-    my_tokenizer= pickle.load( open("./../../pre_trained_model/embedding/embed_tokenizer.pkl", 'rb') )
-    my_cosine= pickle.load(open("./../../pre_trained_model/embedding/embed_cosine.pkl", 'rb') )
-    my_pca= pickle.load(open("./../../pre_trained_model/embedding/embed_pca.pkl", 'rb') )
-    my_embed= pickle.load(open("./../../pre_trained_model/embedding/embed_embeddings.pkl", 'rb') )
-    my_train_sample= pickle.load(open("./../../../pre_trained_model/embedding/embed_train_sample.pkl", 'rb') )
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-except ModuleNotFoundError as e:
-    print("There is some issue with the model file")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def recommend(que, simil, list_data):
   index = list_data[list_data['name'] == que].index[0]  
@@ -99,12 +90,20 @@ def send_embed_data():
     qname = request_data.get('qname', 'No question provided')
     qname = str(qname)
 
+    try:
+        my_model = pickle.load(open(os.path.join(BASE_DIR, "../../../pre_trained_model/embedding/embed_model.pkl"), 'rb'))
+        my_tokenizer= pickle.load( open(os.path.join(BASE_DIR ,"../../../pre_trained_model/embedding/embed_tokenizer.pkl"), 'rb') )
+        my_cosine= pickle.load(open(os.path.join(BASE_DIR,"../../../pre_trained_model/embedding/embed_cosine.pkl"), 'rb') )
+        my_pca= pickle.load(open(os.path.join(BASE_DIR,"../../../pre_trained_model/embedding/embed_pca.pkl"), 'rb') )
+        my_embed= pickle.load(open( os.path.join(BASE_DIR,"../../../pre_trained_model/embedding/embed_embeddings.pkl"), 'rb') )
+        my_train_sample= pickle.load(open(os.path.join(BASE_DIR,"../../../pre_trained_model/embedding/embed_train_sample.pkl"), 'rb') )
+    except FileNotFoundError as e:
+        return jsonify({"error": f"File not found: {e}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {e}"}), 500
+
     data = find_similar_questions(qname, my_tokenizer, my_model, my_pca, my_cosine, my_embed, 'cpu', my_train_sample, top_n=50)
     response = {
-        "q1": data[0],
-        "q2": data[1],
-        "q3": data[2],
-        "q4": data[3],
-        "q5": data[4]
+        "check" : data
     }
     return jsonify(response), 200
