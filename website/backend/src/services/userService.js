@@ -7,7 +7,7 @@ export const upvote = async (username, qId) => {
 
     const questionId = ques._id;
 
-    const question = user.questionsSolved.find(q => q.qId == qId);
+    const question = user.questionsSolved?.find(q => q.qId == qId);
     if (!question) {
         user.questionsSolved.push({ questionId, qId, note: "", vote: 1, timeTaken: 20 });
         ques.upvotes += 1;
