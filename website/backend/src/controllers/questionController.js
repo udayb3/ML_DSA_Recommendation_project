@@ -113,6 +113,24 @@ export const deleteQuestion = async (req, res) => {
   }
 };
 
+export const deleteAll = async (req, res, next) => {
+  try {
+    await Questions.deleteMany();
+
+    res.status(200).json({
+      success: true,
+      message: 'All questions deleted successfully!',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting questions',
+      error: error.message,
+    });
+    next(error); 
+  }
+};
+
 export const updateQuestion = async (req, res) => {
   const { qId } = req.params;
   const {
