@@ -29,7 +29,7 @@ export const getQuestions = async (limit, skip) => {
 }
 
 export const getQuestion = async (qId) => {
-    const question = await Questions.findById(qId);
+    const question = await Questions.findOne({qId});
 
     return question;
 }

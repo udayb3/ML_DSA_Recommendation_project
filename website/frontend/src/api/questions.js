@@ -1,4 +1,4 @@
-export const getQuestions = async (page, limit = 3) => {
+export const getQuestions = async (page, limit = 10) => {
   const response = await fetch(`/api/questions/?page=${page}&limit=${limit}`, {
     method: "GET",
     headers: {
@@ -23,6 +23,42 @@ export const getSimilarQuestions = async (qId) => {
     console.log(response);
     if (!response.ok) {
       throw new Error("Failed to fetch similar questions");
+    }
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+export const getSearchedQuestions = async (search) => {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/questions/search?q=${search}`,
+      {
+        method: "GET",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch searched questions");
+    }
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+export const getQuestion = async (qId) => {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/questions/${qId}`,
+      {
+        method: "GET",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch question");
     }
     return await response.json();
   } catch (err) {

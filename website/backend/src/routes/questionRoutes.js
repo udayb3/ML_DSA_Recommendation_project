@@ -1,8 +1,9 @@
 import express from 'express';
-import { getQuestions, getQuestion, createQuestion, updateQuestion, deleteQuestion , getSimilarQuestions, deleteAll } from '../controllers/questionController.js';
+import { getQuestions, getQuestion, createQuestion, updateQuestion, deleteQuestion , getSimilarQuestions, getSearchedQuestions, deleteAll } from '../controllers/questionController.js';
 
 const router = express.Router();
 router.get('/questions', getQuestions);
+router.get('/questions/search', getSearchedQuestions);
 router.get('/questions/:id', getQuestion);
 router.post('/questions', createQuestion);
 router.delete('/questions', deleteAll);

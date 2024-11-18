@@ -66,8 +66,8 @@ export const getQuestions = async (req, res) => {
 };
 
 export const getQuestion = async (req, res) => {
-  const { qId } = req.params;
-
+  const { id } = req.params;
+  const qId = parseInt(id);
   try {
     const question = await questionService.getQuestion(qId);
     if (!question) {
@@ -197,6 +197,33 @@ export const getSimilarQuestions = async (req, res) => {
     res.status(200).json({
       success: true,
       similarQuestions: responseData,
+    });
+  } catch (e) {
+    res.status(400).json({
+      success: false,
+      message: e.message,
+    });
+  }
+};
+
+export const getSearchedQuestions = async (req, res) => {
+  const { q } = req.query;
+  const qname = q.toLowerCase();
+  try {
+    const response = await fetch(`http://localhost:5000/api/embed_data`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ qname }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to search question");
+    }
+    const responseData = await response.json();
+    res.status(200).json({
+      success: true,
+      SearchedQuestions: responseData,
     });
   } catch (e) {
     res.status(400).json({
