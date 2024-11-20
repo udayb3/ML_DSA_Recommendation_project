@@ -1,6 +1,15 @@
 # ML_DSA_Recommendation_project
+
 This Repository consists of our team Leechers's Machine Learning Project
 
+## Table of Contents
+- [Setup](#setup)
+- [Application Flow](#flow)
+  - [A. See Similar Questions](#a-see-similar-questions)
+  - [B. Search Questions](#b-search-questions)
+- [Data Pipeline](#data-collection-and-preprocessing-pipeline)
+- [Recommendation System](#cosine-similarity-based-recommendation-system)
+- [Model Architecture](#recommendation-model-architecture)
 
 # Set-up
 ### Frontend
@@ -190,7 +199,10 @@ This recommendation system model utilizes BERT and self-attention embeddings to 
 
 The model aims to provide relevant and accurate recommendations by leveraging the power of BERT and cosine similarity analysis.
 
+# References
 
+- [Cosine Similarity](https://ieeexplore.ieee.org/document/7577578)
 
+- [Survey paper of word embedding](https://ieeexplore.ieee.org/document/9390956)
 
-
+- [Impact of word embedding in deep learning environment](https://link.springer.com/article/10.1007/s10462-023-10419-1)
